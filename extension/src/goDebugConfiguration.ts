@@ -27,7 +27,7 @@ import { packagePathToGoModPathMap } from './goModules';
 import { getToolAtVersion } from './goTools';
 import { pickGoProcess, pickProcess, pickProcessByName } from './pickProcess';
 import { getFromGlobalState, updateGlobalState } from './stateUtils';
-import { getBinPath, getGoVersion } from './util';
+import { getBinPath, getGoVersion, getWorkspaceFolderPath } from './util';
 import { parseArgsString } from './utils/argsUtil';
 import { parseEnvFiles } from './utils/envUtils';
 import { resolveHomeDir } from './utils/pathUtils';
@@ -391,7 +391,9 @@ export class GoDebugConfigurationProvider implements vscode.DebugConfigurationPr
 	 */
 	async guessSubstitutePath(): Promise<object | null> {
 		return new Promise((resolve) => {
-			const child = spawn(getBinPath('dlv'), ['substitute-path-guess-helper']);
+			const child = spawn(getBinPath('dlv'), ['substitute-path-guess-helper'], {
+				cwd: getWorkspaceFolderPath()
+			});
 			let stdoutData = '';
 			let stderrData = '';
 			child.stdout.on('data', (data) => {
